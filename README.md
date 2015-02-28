@@ -1,3 +1,24 @@
+## rosdoc_lite (hydro) - 0.2.5-0
+
+The packages in the `rosdoc_lite` repository were released into the `hydro` distro by running `/usr/bin/bloom-release rosdoc_lite -t hydro -r hydro` on `Sat, 28 Feb 2015 22:02:10 -0000`
+
+The `rosdoc_lite` package was released.
+
+Version of package(s) in repository `rosdoc_lite`:
+- upstream repository: https://github.com/ros-infrastructure/rosdoc_lite.git
+- release repository: https://github.com/ros-gbp/rosdoc_lite-release.git
+- rosdistro version: `0.2.4-0`
+- old version: `0.2.4-0`
+- new version: `0.2.5-0`
+
+Versions of tools used:
+- bloom version: `0.5.19`
+- catkin_pkg version: `0.2.7`
+- rosdep version: `0.11.2`
+- rosdistro version: `0.4.1`
+- vcstools version: `0.1.36`
+
+
 ## rosdoc_lite (indigo) - 0.2.4-0
 
 The packages in the `rosdoc_lite` repository were released into the `indigo` distro by running `/usr/bin/bloom-release rosdoc_lite -r indigo -t indigo --edit` on `Thu, 24 Apr 2014 01:35:51 -0000`
