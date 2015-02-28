@@ -42,7 +42,6 @@ import shutil
 NAME = 'rosdoc_lite'
 
 from . import rdcore
-from . import msgenator
 from . import epyenator
 from . import sphinxenator
 from . import landing_page
@@ -194,6 +193,7 @@ def generate_docs(path, package, manifest, output_dir, tagfile, generate_tagfile
     landing_page.generate_landing_page(package, manifest, build_params, html_dir)
 
     #Generate documentation for messages and store the messages successfully generated
+    from . import msgenator
     msgs, srvs, actions = msgenator.generate_msg_docs(package, path, manifest, html_dir)
 
     #Write meta data for the package to a yaml file for use by external tools
@@ -220,15 +220,29 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-    rp = rospkg.RosPack()
     path = os.path.realpath(args[0])
     package = os.path.basename(path)
+    pkg_desc = get_pkg_desc(path)
 
+    manifest = rdcore.PackageInformation(pkg_desc)
+    print("Documenting %s located here: %s" % (package, path))
+
+    try:
+        generate_docs(path, package, manifest, options.docdir, options.tagfile, options.generate_tagfile, options.quiet)
+        print("Done documenting %s you can find your documentation here: %s" % (package, os.path.realpath(options.docdir)))
+    except:
+        traceback.print_exc()
+        sys.exit(1)
+
+
+def get_pkg_desc(path):
     #Check whether we've got a catkin or non-catkin package
     if is_catkin(path):
         pkg_desc = packages.parse_package(path)
         print("Documenting a catkin package")
     else:
+        rp = rospkg.RosPack()
+        package = os.path.basename(path)
         try:
             ros_path = os.path.realpath(rp.get_path(package))
         except rospkg.common.ResourceNotFound as e:
@@ -240,13 +254,25 @@ def main():
             sys.exit(1)
         pkg_desc = rp.get_manifest(package)
         print("Documenting a non-catkin package")
+    return pkg_desc
 
+
+def get_generator_output_folders(path):
+    pkg_desc = get_pkg_desc(path)
     manifest = rdcore.PackageInformation(pkg_desc)
-    print("Documenting %s located here: %s" % (package, path))
 
-    try:
-        generate_docs(path, package, manifest, options.docdir, options.tagfile, options.generate_tagfile, options.quiet)
-        print("Done documenting %s you can find your documentation here: %s" % (package, os.path.realpath(options.docdir)))
-    except:
-        traceback.print_exc()
-        sys.exit(1)
+    # load any rosdoc configuration files
+    rd_config = load_rd_config(path, manifest)
+
+    # put the rd_config into a form that's easier to use with plugins
+    package = os.path.basename(path)
+    build_params = generate_build_params(rd_config, package)
+    print('build_params', build_params)
+
+    data = {}
+    for builder, params in build_params.items():
+        if 'output_dir' in params:
+            output_dir = params['output_dir']
+            if output_dir != '.':
+                data[builder] = output_dir
+    return data
