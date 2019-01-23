@@ -106,7 +106,7 @@ def prepare_tagfiles(tagfile_spec, tagfile_dir, output_subfolder):
     """A function that will load a tagfile from either a URL or the filesystem"""
     tagfile_list = []
     with open(tagfile_spec) as f:
-        tagfile_list = yaml.load(f)
+        tagfile_list = yaml.safe_load(f)
     tagfile_string = ""
     for tag_pair in tagfile_list:
         print(tag_pair)
@@ -182,6 +182,7 @@ def package_doxygen_template(template, rd_config, path, package, html_dir, heade
               '$EXTRACT_ALL': rd_config.get('extract_all', 'YES'),
               '$FILE_PATTERNS': rd_config.get('file_patterns', file_patterns),
               '$GENERATE_TAGFILE': generate_tagfile,
+              '$GENERATE_QHP': rd_config.get('generate_qhp', 'NO'),
               '$HTML_FOOTER': footer_filename,
               '$HTML_HEADER': header_filename,
               '$HTML_OUTPUT': os.path.realpath(html_dir),
@@ -191,9 +192,11 @@ def package_doxygen_template(template, rd_config, path, package, html_dir, heade
               '$MULTILINE_CPP_IS_BRIEF': rd_config.get('multiline_cpp_is_brief', 'NO'),
               '$OUTPUT_DIRECTORY': html_dir,
               '$PREDEFINED': rd_config.get('predefined', predefined),
+              '$QHP_NAMESPACE': 'org.ros.' + package,
               '$SEARCHENGINE': rd_config.get('searchengine', 'NO'),
               '$TAB_SIZE': rd_config.get('tab_size', '8'),
               '$TAGFILES': tagfiles,
+              '$USE_MDFILE_AS_MAINPAGE': rd_config.get('use_mdfile_as_mainpage', '')
               }
     return rdcore.instantiate_template(template, dvars)
 
