@@ -1,3 +1,26 @@
+## rosdoc_lite (kinetic) - 0.2.9-0
+
+The packages in the `rosdoc_lite` repository were released into the `kinetic` distro by running `/usr/bin/bloom-release -r kinetic rosdoc_lite` on `Wed, 23 Jan 2019 23:18:12 -0000`
+
+The `rosdoc_lite` package was released.
+
+Version of package(s) in repository `rosdoc_lite`:
+
+- upstream repository: https://github.com/ros-infrastructure/rosdoc_lite.git
+- release repository: https://github.com/ros-gbp/rosdoc_lite-release.git
+- rosdistro version: `0.2.7-0`
+- old version: `0.2.7-0`
+- new version: `0.2.9-0`
+
+Versions of tools used:
+
+- bloom version: `0.7.1`
+- catkin_pkg version: `0.4.10`
+- rosdep version: `0.14.0`
+- rosdistro version: `0.7.2`
+- vcstools version: `0.1.40`
+
+
 ## rosdoc_lite (indigo) - 0.2.9-0
 
 The packages in the `rosdoc_lite` repository were released into the `indigo` distro by running `/usr/bin/bloom-release -r indigo rosdoc_lite` on `Wed, 23 Jan 2019 22:56:29 -0000`
