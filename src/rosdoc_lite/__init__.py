@@ -69,6 +69,8 @@ def get_optparse(name):
                       help="Path to tag configuration file for Doxygen cross referencing support. Ex: /home/user/tagfiles_list.yaml")
     parser.add_option("-g", "--generate_tagfile", default=None, dest="generate_tagfile",
                       help="If specified, will generate a doxygen tagfile in this location. Ex: /home/user/tags/package.tag")
+    parser.add_option("-p", "--generate_qhp", action="store_true", default=False, dest="generate_qhp",
+                      help="If specified, will generate the Qt Help Project file index.qhp")
     return parser
 
 
@@ -83,13 +85,13 @@ def load_rd_config(path, manifest):
                 exported_config = exported_config.replace('${prefix}', path)
                 config_path = os.path.join(path, exported_config)
                 with open(config_path, 'r') as config_file:
-                    rd_config = yaml.load(config_file)
+                    rd_config = yaml.safe_load(config_file)
             except Exception as e:
                 sys.stderr.write("ERROR: unable to load rosdoc config file [%s]: %s\n" % (config_path, str(e)))
     #we'll check if a 'rosdoc.yaml' file exists in the directory
     elif os.path.isfile(os.path.join(path, 'rosdoc.yaml')):
         with open(os.path.join(path, 'rosdoc.yaml'), 'r') as config_file:
-            rd_config = yaml.load(config_file)
+            rd_config = yaml.safe_load(config_file)
 
     return rd_config
 
@@ -150,7 +152,7 @@ def build_manifest_yaml(manifest, msgs, srvs, actions, output_dir):
         yaml.safe_dump(m_yaml, f, default_flow_style=False)
 
 
-def generate_docs(path, package, manifest, output_dir, tagfile, generate_tagfile, quiet=True):
+def generate_docs(path, package, manifest, output_dir, tagfile, generate_tagfile, generate_qhp=False, quiet=True):
     """
     Generates API docs by invoking plugins with context
 
@@ -175,6 +177,9 @@ def generate_docs(path, package, manifest, output_dir, tagfile, generate_tagfile
 
         if generate_tagfile:
             build_params['doxygen']['generate_tagfile'] = generate_tagfile
+
+        if generate_qhp:
+            build_params['doxygen']['generate_qhp'] = generate_qhp
 
     print(build_params)
 
@@ -228,7 +233,7 @@ def main():
     print("Documenting %s located here: %s" % (package, path))
 
     try:
-        generate_docs(path, package, manifest, options.docdir, options.tagfile, options.generate_tagfile, options.quiet)
+        generate_docs(path, package, manifest, options.docdir, options.tagfile, options.generate_tagfile, options.generate_qhp, options.quiet)
         print("Done documenting %s you can find your documentation here: %s" % (package, os.path.realpath(options.docdir)))
     except:
         traceback.print_exc()
