@@ -82,7 +82,7 @@ def generate_links(package, manifest, rd_configs):
     :param rd_configs: [dict] package manifest rosdoc configs
     :returns: [str] list of html snippets
     """
-    config_list = [c for c in rd_configs.itervalues() if c['builder'] != 'rosmake']
+    config_list = [c for c in rd_configs.values() if c['builder'] != 'rosmake']
     output_dirs = [output_location(c) for c in config_list]
     # filter out empties
     output_dirs = [d for d in output_dirs if d and d != '.']
@@ -134,6 +134,6 @@ def generate_landing_page(package, manifest, rd_configs, output_dir):
         with open(os.path.join(html_dir, 'index.html'), 'w') as f:
             f.write(rdcore.instantiate_template(template, tempvars))
 
-    except Exception, e:
+    except Exception as e:
         print("Unable to generate landing_page for [%s]:\n\t%s" % (package, str(e)), file=sys.stderr)
         raise

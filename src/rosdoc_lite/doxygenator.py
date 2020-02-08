@@ -123,27 +123,34 @@ def prepare_tagfiles(tagfile_spec, tagfile_dir, output_subfolder):
                 tagfile = open(tagfile_path, 'w')
                 tagfile.write(ret.read())
                 tagfile.close()
-                tagfile_string += "%s=%s " % (tagfile_path, get_relative_doc_path(output_subfolder, tag_pair))
+                tagfile_string += "%s=%s " % (tagfile_path, get_doc_path(output_subfolder, tag_pair))
             except (urllib2.URLError, urllib2.HTTPError) as e:
                 print("Could not fetch the tagfile from %s, skipping" % tag_pair['location'], file=sys.stderr)
                 continue
         elif tag_pair['location'].find("file://") == 0:
             tagfile_path = tag_pair['location'][7:]
-            tagfile_string += "%s=%s " % (tagfile_path, get_relative_doc_path(output_subfolder, tag_pair))
+            tagfile_string += "%s=%s " % (tagfile_path, get_doc_path(output_subfolder, tag_pair))
         else:
             print("Tagfile location only supports http// and file:// prefixes, but you specify %s, skipping" % tag_pair['location'],
                   file=sys.stderr)
     return tagfile_string
 
 
-def get_relative_doc_path(output_subfolder, tag_pair):
+def get_doc_path(output_subfolder, tag_pair):
+    """Gets path from output_subfolder to url of tag_pair
+
+    If the url is a relative path from the root of documentation, the resulting
+    path will be relative to the output_subfolder, otherwise the absolute url
+    will be returned.
+    """
     path = tag_pair['docs_url']
     # prefix the path with as many .. as the output_subfolder is deep
-    if output_subfolder != '.':
-        output_subfolder_level = len(output_subfolder.split('/'))
-        reverse_output_subfolder = output_subfolder_level * ['..']
-        reverse_output_subfolder = os.path.join(*reverse_output_subfolder)
-        path = os.path.join(reverse_output_subfolder, path)
+    if not path.startswith('http://') and not path.startswith('https://'):
+        if output_subfolder != '.':
+            output_subfolder_level = len(output_subfolder.split('/'))
+            reverse_output_subfolder = output_subfolder_level * ['..']
+            reverse_output_subfolder = os.path.join(*reverse_output_subfolder)
+            path = os.path.join(reverse_output_subfolder, path)
     # append generator specific output folder
     if 'doxygen_output_folder' in tag_pair:
         path = os.path.join(path, tag_pair['doxygen_output_folder'])
@@ -171,6 +178,10 @@ def package_doxygen_template(template, rd_config, path, package, html_dir, heade
             os.makedirs(generate_dir)
 
     print("Generated the following tagfile string %s" % tagfiles)
+    
+    mdfile = rd_config.get('use_mdfile_as_mainpage', '')
+    if mdfile:
+        mdfile = os.path.join(path, mdfile)
 
     # example path is where htmlinclude operates, so we'll set it to the directory storying manifest.html
     dvars = { '$ALIASES': rd_config.get('aliases', ''),
@@ -187,7 +198,8 @@ def package_doxygen_template(template, rd_config, path, package, html_dir, heade
               '$HTML_HEADER': header_filename,
               '$HTML_OUTPUT': os.path.realpath(html_dir),
               '$IMAGE_PATH': rd_config.get('image_path', path), #default to $INPUT
-              '$INPUT':  path, '$PROJECT_NAME': package,
+              '$INPUT': ' '.join([path, mdfile]),
+              '$PROJECT_NAME': package,
               '$JAVADOC_AUTOBRIEF': rd_config.get('javadoc_autobrief', 'NO'),
               '$MULTILINE_CPP_IS_BRIEF': rd_config.get('multiline_cpp_is_brief', 'NO'),
               '$OUTPUT_DIRECTORY': html_dir,
@@ -254,7 +266,7 @@ def generate_doxygen(path, package, manifest, rd_config, output_dir, quiet):
         shutil.copyfile(dstyles_in, dstyles_css)
         """
 
-    except Exception, e:
+    except Exception as e:
         print("ERROR: Doxygen of package [%s] failed: %s" % (package, str(e)), file=sys.stderr)
         #make sure to pass the exception up the stack
         raise
