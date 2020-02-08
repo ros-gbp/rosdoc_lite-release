@@ -1,3 +1,26 @@
+## rosdoc_lite (noetic) - 0.2.10-1
+
+The packages in the `rosdoc_lite` repository were released into the `noetic` distro by running `/usr/bin/bloom-release -r noetic rosdoc_lite` on `Sat, 08 Feb 2020 00:24:12 -0000`
+
+The `rosdoc_lite` package was released.
+
+Version of package(s) in repository `rosdoc_lite`:
+
+- upstream repository: https://github.com/ros-infrastructure/rosdoc_lite.git
+- release repository: unknown
+- rosdistro version: `null`
+- old version: `null`
+- new version: `0.2.10-1`
+
+Versions of tools used:
+
+- bloom version: `0.9.0`
+- catkin_pkg version: `0.4.16`
+- rosdep version: `0.18.0`
+- rosdistro version: `0.8.0`
+- vcstools version: `0.1.42`
+
+
 ## rosdoc_lite (melodic) - 0.2.9-0
 
 The packages in the `rosdoc_lite` repository were released into the `melodic` distro by running `/usr/bin/bloom-release -r melodic rosdoc_lite` on `Wed, 23 Jan 2019 23:57:53 -0000`
