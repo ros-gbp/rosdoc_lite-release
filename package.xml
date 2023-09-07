@@ -4,7 +4,7 @@
   schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>rosdoc_lite</name>
-  <version>0.2.10</version>
+  <version>0.2.11</version>
   <description>
     This ROS package wraps documentation tools like doxygen, sphinx,
     and epydoc, making it convenient to generate ROS package
@@ -21,10 +21,13 @@
   <url type="bugtracker">https://github.com/ros-infrastructure/rosdoc_lite/issues</url>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_PYTHON_VERSION == 2">python-setuptools</buildtool_depend>
+  <buildtool_depend condition="$ROS_PYTHON_VERSION == 3">python3-setuptools</buildtool_depend>
 
   <exec_depend>doxygen</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">epydoc</exec_depend>
   <exec_depend>genmsg</exec_depend>
+  <exec_depend>graphviz</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-catkin-pkg-modules</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-catkin-pkg-modules</exec_depend>
   <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-kitchen</exec_depend>

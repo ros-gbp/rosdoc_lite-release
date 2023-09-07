@@ -35,6 +35,7 @@ from __future__ import with_statement
 from __future__ import print_function
 
 import os
+import subprocess
 import sys
 from subprocess import Popen, PIPE
 import tempfile
@@ -48,10 +49,13 @@ def run_doxygen(package, doxygen_file, quiet=False):
     try:
         command = ['doxygen', doxygen_file]
         if quiet:
-            Popen(command, stdout=PIPE, stderr=PIPE).communicate()
+            process = Popen(command, stdout=PIPE, stderr=PIPE)
         else:
             print("doxygen-ating %s [%s]" % (package, ' '.join(command)))
-            Popen(command, stdout=PIPE).communicate()
+            process = Popen(command, stdout=PIPE)
+        com = process.communicate()
+        if process.returncode != 0:
+            raise subprocess.CalledProcessError(process.returncode, command, com[0])
     except OSError:
         #fatal
         print("""\nERROR: It appears that you do not have doxygen installed.
@@ -178,7 +182,7 @@ def package_doxygen_template(template, rd_config, path, package, html_dir, heade
             os.makedirs(generate_dir)
 
     print("Generated the following tagfile string %s" % tagfiles)
-    
+
     mdfile = rd_config.get('use_mdfile_as_mainpage', '')
     if mdfile:
         mdfile = os.path.join(path, mdfile)
@@ -193,12 +197,15 @@ def package_doxygen_template(template, rd_config, path, package, html_dir, heade
               '$EXTRACT_ALL': rd_config.get('extract_all', 'YES'),
               '$FILE_PATTERNS': rd_config.get('file_patterns', file_patterns),
               '$GENERATE_TAGFILE': generate_tagfile,
+              '$GENERATE_TREEVIEW': rd_config.get('generate_treeview', 'NO'),
               '$GENERATE_QHP': rd_config.get('generate_qhp', 'NO'),
               '$HTML_FOOTER': footer_filename,
               '$HTML_HEADER': header_filename,
               '$HTML_OUTPUT': os.path.realpath(html_dir),
               '$IMAGE_PATH': rd_config.get('image_path', path), #default to $INPUT
+              '$INCLUDE_PATH': rd_config.get('include_path', ''),
               '$INPUT': ' '.join([path, mdfile]),
+              '$INPUT_FILTER': rd_config.get('input_filter', ''),
               '$PROJECT_NAME': package,
               '$JAVADOC_AUTOBRIEF': rd_config.get('javadoc_autobrief', 'NO'),
               '$MULTILINE_CPP_IS_BRIEF': rd_config.get('multiline_cpp_is_brief', 'NO'),
